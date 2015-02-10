@@ -25,6 +25,19 @@ public static class Terrain
         return GetBlockPos(pos);
     }
 
+    public static Block GetBlock(RaycastHit hit, bool adjacent = false)
+    {
+        Chunk chunk = hit.collider.GetComponent<Chunk>();
+        if (chunk == null)
+            return null;
+
+        WorldPos pos = GetBlockPos(hit, adjacent);
+
+        Block block = chunk.world.GetBlock(pos.x, pos.y, pos.z);
+
+        return block;
+    }
+
     static float MoveWithinBlock(float pos, float norm, bool adjacent = false)
     {
         if (pos - (int)pos == 0.5f || pos - (int)pos == -0.5f)
@@ -40,5 +53,20 @@ public static class Terrain
         }
 
         return (float)pos;
+    }
+
+    
+
+    public static bool SetBlock(RaycastHit hit, Block block, bool adjacent = false)
+    {
+        Chunk chunk = hit.collider.GetComponent<Chunk>();
+        if (chunk == null)
+            return false;
+
+        WorldPos pos = GetBlockPos(hit, adjacent);
+
+        chunk.world.SetBlock(pos.x, pos.y, pos.z, block);
+
+        return true;
     }
 }
