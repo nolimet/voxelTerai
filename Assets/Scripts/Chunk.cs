@@ -6,9 +6,11 @@ using System.Collections;
 [RequireComponent(typeof(MeshCollider))]
 public class Chunk : MonoBehaviour {
 
-    Block[, ,] blocks;
+    private Block[, ,] blocks = new Block[chunkSize, chunkSize, chunkSize];
     public static int chunkSize = 16;
     public bool update = true;
+    public World world;
+    public WorldPos pos;
 
     MeshFilter filter;
     MeshCollider coll;
@@ -20,7 +22,7 @@ public class Chunk : MonoBehaviour {
         filter = gameObject.GetComponent<MeshFilter>();
         coll = gameObject.GetComponent<MeshCollider>();
 
-        //past here is just to set up an example chunk
+        /*//past here is just to set up an example chunk
         blocks = new Block[chunkSize, chunkSize, chunkSize];
 
         for (int x = 0; x < chunkSize; x++)
@@ -37,20 +39,43 @@ public class Chunk : MonoBehaviour {
         blocks[3, 5, 2] = new Block();
         blocks[4, 5, 2] = new BlockGrass();
 
-        UpdateChunk();
-    }
-
-
-
-    //Update is called once per frame
-    void Update()
-    {
-
+        UpdateChunk();*/
     }
 
     public Block GetBlock(int x, int y, int z)
     {
-        return blocks[x, y, z];
+        if (InRange(x) && InRange(y) && InRange(z))
+            return blocks[x, y, z];
+        return world.GetBlock(pos.x + x, pos.y + y, pos.z + z);
+    }
+
+    public static bool InRange(int index)
+    {
+        if (index < 0 || index >= chunkSize)
+            return false;
+
+        return true;
+    }
+
+    void Update()
+    {
+        if (update)
+        {
+            update = false;
+            UpdateChunk();
+        }
+    }
+
+    public void SetBlock(int x, int y, int z, Block block)
+    {
+        if (InRange(x) && InRange(y) && InRange(z))
+        {
+            blocks[x, y, z] = block;
+        }
+        else
+        {
+            world.SetBlock(pos.x + x, pos.y + y, pos.z + z, block);
+        }
     }
 
     //Updates the chunk based on its contents
