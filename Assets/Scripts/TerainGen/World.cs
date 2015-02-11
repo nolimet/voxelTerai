@@ -5,22 +5,51 @@ using System.Collections.Generic;
 public class World : MonoBehaviour {
 
     public Dictionary<WorldPos, Chunk> chunks = new Dictionary<WorldPos, Chunk>();
+
     public GameObject chunkPrefab;
+
+    public string worldName = "world";
+
+    /*public int newChunkX;
+    public int newChunkY;
+    public int newChunkZ;
+
+    public bool genChunk;
 
     void Start()
     {
-
-        for (int x = -2; x < 2; x++)
+        int sizeX = 8;
+        int sizeZ = 8;
+        for (int x = -sizeX; x < sizeX; x++)
         {
-            for (int y = -1; y < 1; y++)
+            for (int y = -1; y < 3; y++)
             {
-                for (int z = -1; z < 1; z++)
+                for (int z = -sizeZ; z < sizeZ; z++)
                 {
                     CreateChunk(x * 16, y * 16, z * 16);
                 }
             }
         }
     }
+
+    void Update()
+    {
+        if (genChunk)
+        {
+            genChunk = false;
+            WorldPos chunkPos = new WorldPos(newChunkX, newChunkY, newChunkZ);
+            Chunk chunk = null;
+
+            if (chunks.TryGetValue(chunkPos, out chunk))
+            {
+                DestroyChunk(chunkPos.x, chunkPos.y, chunkPos.z);
+            }
+            else
+            {
+                CreateChunk(chunkPos.x, chunkPos.y, chunkPos.z);
+            }
+        }
+    }*/
 
     public Chunk GetChunk(int x, int y, int z)
     {
@@ -77,10 +106,11 @@ public class World : MonoBehaviour {
     public void DestroyChunk(int x, int y, int z)
     {
         Chunk chunk = null;
-        if (chunks.TryGetValue(new WorldPos(x, y, z), out chunk))
+        if (chunks.TryGetValue(new WorldPos(x, y, x), out chunk))
         {
-            Object.Destroy(chunk.gameObject);
-            chunks.Remove(new WorldPos(x, y, z));
+            Serialization.SaveChunk(chunk); 
+            UnityEngine.Object.Destroy(chunk.gameObject);
+            chunks.Remove(new WorldPos(x, y, x));
         }
     }
 
@@ -107,9 +137,8 @@ public class World : MonoBehaviour {
 
         //Add it to the chunks dictionary with the position as the key
         chunks.Add(worldPos, newChunk);
-
-        //Add the following:
-        for (int xi = 0; xi < 16; xi++)
+       
+      /*  for (int xi = 0; xi < 16; xi++)
         {
             for (int yi = 0; yi < 16; yi++)
             {
@@ -125,7 +154,15 @@ public class World : MonoBehaviour {
                     }
                 }
             }
-        }
+        }*/
+        //load modifyed blocks
+
+        var terrainGen = new TerrainGen();
+        newChunk = terrainGen.ChunkGen(newChunk);
+
+        newChunk.SetBlocksUnmodified();
+
+        bool loaded = Serialization.Load(newChunk);
     }
 
     void UpdateIfEqual(int value1, int value2, WorldPos pos)

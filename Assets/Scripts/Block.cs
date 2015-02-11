@@ -1,9 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
+[Serializable]
 public class Block
 {
     public enum Direction { north, east, south, west, up, down };
+
+    public bool changed = true;
 
     const float tileSize = 0.25f;
 

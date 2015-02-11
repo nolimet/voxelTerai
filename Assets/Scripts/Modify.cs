@@ -22,14 +22,26 @@ public class Modify : MonoBehaviour
             }
         }
 
-        rot = new Vector2(
-            rot.x + Input.GetAxis("Mouse X") * 3,
-            rot.y + Input.GetAxis("Mouse Y") * 3);
+        if (Screen.lockCursor)
+        {
+            rot = new Vector2(
+                rot.x + Input.GetAxis("Mouse X") * 3,
+                rot.y + Input.GetAxis("Mouse Y") * 3);
 
-        transform.localRotation = Quaternion.AngleAxis(rot.x, Vector3.up);
-        transform.localRotation *= Quaternion.AngleAxis(rot.y, Vector3.left);
-
-        transform.position += transform.forward * 3 * Input.GetAxis("Vertical") * Time.deltaTime ;
-        transform.position += transform.right * 3 * Input.GetAxis("Horizontal") * Time.deltaTime ;
+            transform.localRotation = Quaternion.AngleAxis(rot.x, Vector3.up);
+            transform.localRotation *= Quaternion.AngleAxis(rot.y, Vector3.left);
+            if (Input.GetKeyDown(KeyCode.Escape))
+                Screen.lockCursor = false;
+        }
+        else
+            if (Input.GetMouseButton(1))
+                Screen.lockCursor = true;
+        float speed;
+        if (Input.GetKey(KeyCode.LeftShift))
+            speed = 10f;
+        else
+            speed = 3f;
+        transform.position += transform.forward * speed * Input.GetAxis("Vertical") * Time.deltaTime ;
+        transform.position += transform.right * speed * Input.GetAxis("Horizontal") * Time.deltaTime ;
     }
 }

@@ -6,11 +6,12 @@ using System.Collections;
 [RequireComponent(typeof(MeshCollider))]
 public class Chunk : MonoBehaviour {
 
-    private Block[, ,] blocks = new Block[chunkSize, chunkSize, chunkSize];
+    public Block[, ,] blocks = new Block[chunkSize, chunkSize, chunkSize];
     public static int chunkSize = 16;
-    public bool update = true;
+    public bool update = false;
     public World world;
     public WorldPos pos;
+    public bool rendered;
 
     MeshFilter filter;
     MeshCollider coll;
@@ -40,6 +41,14 @@ public class Chunk : MonoBehaviour {
         blocks[4, 5, 2] = new BlockGrass();
 
         UpdateChunk();*/
+    }
+
+    public void SetBlocksUnmodified()
+    {
+        foreach (Block block in blocks)
+        {
+            block.changed = false;
+        }
     }
 
     public Block GetBlock(int x, int y, int z)
@@ -81,6 +90,7 @@ public class Chunk : MonoBehaviour {
     //Updates the chunk based on its contents
     void UpdateChunk()
     {
+        rendered = true;
         MeshData meshData = new MeshData();
 
         for (int x = 0; x < chunkSize; x++)
