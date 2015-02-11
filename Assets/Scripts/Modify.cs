@@ -39,6 +39,8 @@ public class Modify : MonoBehaviour
         float speed;
         if (Input.GetKey(KeyCode.LeftShift))
             speed = 10f;
+        else if (Input.GetKey(KeyCode.LeftControl))
+            speed = 50f;
         else
             speed = 3f;
         transform.position += transform.forward * speed * Input.GetAxis("Vertical") * Time.deltaTime ;

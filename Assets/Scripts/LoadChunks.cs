@@ -53,12 +53,106 @@ public class LoadChunks : MonoBehaviour
 
     int timer = 0;
     public int viewDistance = 256;
+
+    //Task ChunkFinder, LoadAndRender;
+
     // Update is called once per frame
     void Update()
     {
+        /*if (ChunkFinder == null || !ChunkFinder.Running )
+            ChunkFinder = new Task(FindChunksToLoad());
+        if (LoadAndRender == null || !LoadAndRender.Running)
+            LoadAndRender = new Task(LoadAndRenderChunks());*/
         DeleteChunks();
         FindChunksToLoad();
         LoadAndRenderChunks();
+    }
+
+    IEnumerator IFindChunksToLoad()
+    {
+        //Get the position of this gameobject to generate around
+        WorldPos playerPos = new WorldPos(
+            Mathf.FloorToInt(transform.position.x / Chunk.chunkSize) * Chunk.chunkSize,
+            Mathf.FloorToInt(transform.position.y / Chunk.chunkSize) * Chunk.chunkSize,
+            Mathf.FloorToInt(transform.position.z / Chunk.chunkSize) * Chunk.chunkSize
+            );
+
+        //If there aren't already chunks to generate
+        if (buildList.Count == 0)
+        {
+            //Cycle through the array of positions
+            for (int i = 0; i < chunkPositions.Length; i++)
+            {
+                //translate the player position and array position into chunk position
+                WorldPos newChunkPos = new WorldPos(
+                    chunkPositions[i].x * Chunk.chunkSize + playerPos.x,
+                    0,
+                    chunkPositions[i].z * Chunk.chunkSize + playerPos.z
+                    );
+
+                //Get the chunk in the defined position
+                Chunk newChunk = world.GetChunk(
+                    newChunkPos.x, newChunkPos.y, newChunkPos.z);
+
+                //If the chunk already exists and it's already
+                //rendered or in queue to be rendered continue
+                if (newChunk != null
+                    && (newChunk.rendered || updateList.Contains(newChunkPos)))
+                    continue;
+
+                //load a column of chunks in this position
+                for (int y = -4; y < 4; y++)
+                {
+                    buildList.Add(new WorldPos(
+                        newChunkPos.x, y * Chunk.chunkSize, newChunkPos.z));
+                }
+                if (i % 16 == 0)
+                    yield return new WaitForEndOfFrame();
+                break;
+            }
+        }
+    }
+
+    IEnumerator ILoadAndRenderChunks()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            if (buildList.Count != 0)
+            {
+                BuildChunk(buildList[0]);
+                buildList.RemoveAt(0);
+            }
+        }
+
+        for (int i = 0; i < updateList.Count; i++)
+        {
+            Chunk chunk = world.GetChunk(updateList[0].x, updateList[0].y, updateList[0].z);
+            if (chunk != null)
+                chunk.update = true;
+            updateList.RemoveAt(0);
+            if (i % 10 == 0)
+                yield return new WaitForEndOfFrame();
+        }
+    }
+
+    void BuildChunk(WorldPos pos)
+    {
+        for (int y = pos.y - Chunk.chunkSize; y <= pos.y + Chunk.chunkSize; y += Chunk.chunkSize)
+        {
+            if (y > 64 || y < -64)
+                continue;
+
+            for (int x = pos.x - Chunk.chunkSize; x <= pos.x + Chunk.chunkSize; x += Chunk.chunkSize)
+            {
+                for (int z = pos.z - Chunk.chunkSize; z <= pos.z + Chunk.chunkSize; z += Chunk.chunkSize)
+                {
+                    if (world.GetChunk(x, y, z) == null)
+                        world.CreateChunk(x, y, z);
+                }
+            }
+        }
+
+        updateList.Add(pos);
     }
 
     void FindChunksToLoad()
@@ -104,26 +198,6 @@ public class LoadChunks : MonoBehaviour
         }
     }
 
-    void BuildChunk(WorldPos pos)
-    {
-        for (int y = pos.y - Chunk.chunkSize; y <= pos.y + Chunk.chunkSize; y += Chunk.chunkSize)
-        {
-            if (y > 64 || y < -64)
-                continue;
-
-            for (int x = pos.x - Chunk.chunkSize; x <= pos.x + Chunk.chunkSize; x += Chunk.chunkSize)
-            {
-                for (int z = pos.z - Chunk.chunkSize; z <= pos.z + Chunk.chunkSize; z += Chunk.chunkSize)
-                {
-                    if (world.GetChunk(x, y, z) == null)
-                        world.CreateChunk(x, y, z);
-                }
-            }
-        }
-
-        updateList.Add(pos);
-    }
-
     void LoadAndRenderChunks()
     {
         for (int i = 0; i < 4; i++)
@@ -149,20 +223,32 @@ public class LoadChunks : MonoBehaviour
 
         if (timer == 10)
         {
-            var chunksToDelete = new List<WorldPos>();
+            List<WorldPos> chunksToDelete = new List<WorldPos>();
             foreach (var chunk in world.chunks)
             {
-                float distance = Vector2.Distance(
+                float distance = Vector3.Distance(
                     new Vector3(chunk.Value.pos.x, 0, chunk.Value.pos.z),
                     new Vector3(transform.position.x, 0, transform.position.z));
 
                 if (distance > viewDistance)
+                {
                     chunksToDelete.Add(chunk.Key);
+                }
+                if(distance == 0)
+                {
+                    print(chunk.Value.name);
+                }
             }
 
-            foreach (var chunk in chunksToDelete)
+            print("Chunks tobe Destoryed" + chunksToDelete.Count);
+            int length = chunksToDelete.Count;
+            for (int i = 0; i < length; i++)
+            {
+                world.DestroyChunk(chunksToDelete[i].x, chunksToDelete[i].y, chunksToDelete[i].z);
+            }
+            /*foreach (WorldPos chunk in chunksToDelete)
                 world.DestroyChunk(chunk.x, chunk.y, chunk.z);
-
+            */
             timer = 0;
         }
 

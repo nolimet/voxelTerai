@@ -13,6 +13,7 @@ public class TerrainGen
     float stoneMountainFrequency = 0.008f;
     float stoneMinHeight = -12;
 
+   // float grassBaseHeight = 1;
     float dirtBaseHeight = 1;
     float dirtNoise = 0.04f;
     float dirtNoiseHeight = 3;
@@ -40,6 +41,7 @@ public class TerrainGen
         stoneHeight += GetNoise(x, 0, z, stoneBaseNoise, Mathf.FloorToInt(stoneBaseNoiseHeight));
 
         int dirtHeight = stoneHeight + Mathf.FloorToInt(dirtBaseHeight);
+        //bool placedGrass = false;
         dirtHeight += GetNoise(x, 100, z, dirtNoise, Mathf.FloorToInt(dirtNoiseHeight));
 
         for (int y = chunk.pos.y; y < chunk.pos.y + Chunk.chunkSize; y++)
@@ -50,7 +52,13 @@ public class TerrainGen
             }
             else if (y <= dirtHeight)
             {
-                chunk.SetBlock(x - chunk.pos.x, y - chunk.pos.y, z - chunk.pos.z, new BlockGrass());
+               // if (!placedGrass)
+               // {
+                    chunk.SetBlock(x - chunk.pos.x, y - chunk.pos.y, z - chunk.pos.z, new BlockGrass());
+                   // placedGrass = true;
+               // }
+                //else
+                 //   chunk.SetBlock(x - chunk.pos.x, y - chunk.pos.y, z - chunk.pos.z, new BlockDirt());
             }
             else
             {

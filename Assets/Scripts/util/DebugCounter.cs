@@ -28,10 +28,8 @@ public class DebugCounter : MonoBehaviour {
             timer = 5;
         }
         timer--;
-        
-        
-    }
 
+    }
 	void OnGUI()
     {
         
