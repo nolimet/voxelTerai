@@ -93,40 +93,40 @@ public class World : MonoBehaviour {
         if (chunk != null)
         {
             chunk.SetBlock(x - chunk.pos.x, y - chunk.pos.y, z - chunk.pos.z, block);
-            chunk.update = true;
+            //chunk.update = true;
             UpdateIfEqual(x - chunk.pos.x, 0, new WorldPos(x - 1, y, z));
             UpdateIfEqual(x - chunk.pos.x, Chunk.chunkSize - 1, new WorldPos(x + 1, y, z));
             UpdateIfEqual(y - chunk.pos.y, 0, new WorldPos(x, y - 1, z));
             UpdateIfEqual(y - chunk.pos.y, Chunk.chunkSize - 1, new WorldPos(x, y + 1, z));
             UpdateIfEqual(z - chunk.pos.z, 0, new WorldPos(x, y, z - 1));
             UpdateIfEqual(z - chunk.pos.z, Chunk.chunkSize - 1, new WorldPos(x, y, z + 1));
+            chunk.UpdateChunk();
         }
     }
 
     public void DestroyChunk(int x, int y, int z)
     {
         Chunk chunk = null;
-        if (chunks.TryGetValue(new WorldPos(x, y, x), out chunk))
+        if (chunks.TryGetValue(new WorldPos(x, y, z), out chunk))
         {
-            print("poof");
+            //print("Destoryed " + chunk.name);
             Serialization.SaveChunk(chunk);
-            chunks.Remove(new WorldPos(x, y, x));
-            UnityEngine.Object.Destroy(chunk.gameObject);
-            
+            Object.Destroy(chunk.gameObject);
+            chunks.Remove(new WorldPos(x, y, z));
         }
     }
 
     public void PostProcessChunk(int x, int y, int z)
     {
         Chunk chunk = null;
-        if (chunks.TryGetValue(new WorldPos(x, y, z), out chunk))
-            chunk.update = true;
+        /*if (chunks.TryGetValue(new WorldPos(x, y, z), out chunk))
+            chunk.update = true;*/
         for (int xi = -1; x < 2; xi++)
         {
             for (int zi = -1; z < 2; zi++)
             {
-                if (chunks.TryGetValue(new WorldPos(x + xi, y, z + zi), out chunk))
-                    chunk.update = true;
+                if (chunks.TryGetValue(new WorldPos(x + xi, y, z + zi), out chunk)) { }
+                    //chunk.update = true;
             }
         }
     }
@@ -189,7 +189,7 @@ public class World : MonoBehaviour {
         {
             Chunk chunk = GetChunk(pos.x, pos.y, pos.z);
             if (chunk != null)
-                chunk.update = true;
+                chunk.UpdateChunk();
 
         }
     }

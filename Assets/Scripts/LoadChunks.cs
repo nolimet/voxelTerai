@@ -54,6 +54,7 @@ public class LoadChunks : MonoBehaviour
     int timer = 0;
     public int viewDistance = 256;
 
+    bool dochunkstuff = true;
     //Task ChunkFinder, LoadAndRender;
 
     // Update is called once per frame
@@ -63,11 +64,33 @@ public class LoadChunks : MonoBehaviour
             ChunkFinder = new Task(FindChunksToLoad());
         if (LoadAndRender == null || !LoadAndRender.Running)
             LoadAndRender = new Task(LoadAndRenderChunks());*/
-        DeleteChunks();
-        FindChunksToLoad();
-        LoadAndRenderChunks();
+
+        Control();
+        if (dochunkstuff)
+        {
+            DeleteChunks();
+            FindChunksToLoad();
+            LoadAndRenderChunks();
+        }
     }
 
+
+    void OnDestory()
+    {
+        if(!Application.isEditor)
+            foreach (var chunk in world.chunks)
+            {
+                world.DestroyChunk(chunk.Key.x, chunk.Key.y, chunk.Key.z);
+            }
+    }
+
+    void Control()
+    {
+        if (Input.GetKeyDown(KeyCode.C))
+            dochunkstuff = !dochunkstuff;
+
+    }
+    /*
     IEnumerator IFindChunksToLoad()
     {
         //Get the position of this gameobject to generate around
@@ -134,6 +157,7 @@ public class LoadChunks : MonoBehaviour
                 yield return new WaitForEndOfFrame();
         }
     }
+    */
 
     void BuildChunk(WorldPos pos)
     {
@@ -209,12 +233,16 @@ public class LoadChunks : MonoBehaviour
             }
         }
 
-        for (int i = 0; i < updateList.Count; i++)
+        int l = updateList.Count;
+        for (int i = 0; i < l; i++)
         {
             Chunk chunk = world.GetChunk(updateList[0].x, updateList[0].y, updateList[0].z);
             if (chunk != null)
-                chunk.update = true;
+                //chunk.update = true;
+                chunk.UpdateChunk();
             updateList.RemoveAt(0);
+           // if (i % 20 == 0 && i!=0)
+           //     return;
         }
     }
 
@@ -230,21 +258,21 @@ public class LoadChunks : MonoBehaviour
                     new Vector3(chunk.Value.pos.x, 0, chunk.Value.pos.z),
                     new Vector3(transform.position.x, 0, transform.position.z));
 
-                if (distance > viewDistance)
+                if (distance > 256)
                 {
                     chunksToDelete.Add(chunk.Key);
                 }
             }
 
-            print("Chunks tobe Destoryed" + chunksToDelete.Count);
-            int length = chunksToDelete.Count;
+            //print("Chunks tobe Destoryed" + chunksToDelete.Count);
+          /*  int length = chunksToDelete.Count;
             for (int i = 0; i < length; i++)
             {
                 world.DestroyChunk(chunksToDelete[i].x, chunksToDelete[i].y, chunksToDelete[i].z);
-            }
-            /*foreach (WorldPos chunk in chunksToDelete)
+            }*/
+
+            foreach (var chunk in chunksToDelete)
                 world.DestroyChunk(chunk.x, chunk.y, chunk.z);
-            */
             timer = 0;
         }
 

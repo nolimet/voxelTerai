@@ -24,7 +24,7 @@ public static class Serialization
 
     public static string FileName(WorldPos chunkLocation)
     {
-        string fileName = chunkLocation.x + "," + chunkLocation.y + "," + chunkLocation.z + ".bin";
+        string fileName = chunkLocation.x + "," + chunkLocation.y + "," + chunkLocation.z + ".chk";
         return fileName;
     }
 

@@ -52,13 +52,10 @@ public class TerrainGen
             }
             else if (y <= dirtHeight)
             {
-               // if (!placedGrass)
-               // {
+                if (y <= dirtHeight - 1)
+                    chunk.SetBlock(x - chunk.pos.x, y - chunk.pos.y, z - chunk.pos.z, new BlockDirt());
+                else
                     chunk.SetBlock(x - chunk.pos.x, y - chunk.pos.y, z - chunk.pos.z, new BlockGrass());
-                   // placedGrass = true;
-               // }
-                //else
-                 //   chunk.SetBlock(x - chunk.pos.x, y - chunk.pos.y, z - chunk.pos.z, new BlockDirt());
             }
             else
             {

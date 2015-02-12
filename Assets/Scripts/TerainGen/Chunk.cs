@@ -8,7 +8,7 @@ public class Chunk : MonoBehaviour {
 
     public Block[, ,] blocks = new Block[chunkSize, chunkSize, chunkSize];
     public static int chunkSize = 16;
-    public bool update = false;
+   // public bool update = false;
     public World world;
     public WorldPos pos;
     public bool rendered;
@@ -66,14 +66,14 @@ public class Chunk : MonoBehaviour {
         return true;
     }
 
-    void Update()
+    /*void Update()
     {
         if (update)
         {
             update = false;
             UpdateChunk();
         }
-    }
+    }*/
 
     public void SetBlock(int x, int y, int z, Block block)
     {
@@ -88,7 +88,7 @@ public class Chunk : MonoBehaviour {
     }
 
     //Updates the chunk based on its contents
-    void UpdateChunk()
+    public void UpdateChunk()
     {
         rendered = true;
         MeshData meshData = new MeshData();
@@ -111,19 +111,22 @@ public class Chunk : MonoBehaviour {
     // to the mesh and collision components
     void RenderMesh(MeshData meshData)
     {
-        filter.mesh.Clear();
-        filter.mesh.vertices = meshData.vertices.ToArray();
-        filter.mesh.triangles = meshData.triangles.ToArray();
-        
-        filter.mesh.uv = meshData.uv.ToArray();
-        filter.mesh.RecalculateNormals();
+        if (filter != null)
+        {
+            filter.mesh.Clear();
+            filter.mesh.vertices = meshData.vertices.ToArray();
+            filter.mesh.triangles = meshData.triangles.ToArray();
 
-        coll.sharedMesh = null;
-        Mesh mesh = new Mesh();
-        mesh.vertices = meshData.colVertices.ToArray();
-        mesh.triangles = meshData.colTriangles.ToArray();
-        mesh.RecalculateNormals();
+            filter.mesh.uv = meshData.uv.ToArray();
+            filter.mesh.RecalculateNormals();
 
-        coll.sharedMesh = mesh;
+            coll.sharedMesh = null;
+            Mesh mesh = new Mesh();
+            mesh.vertices = meshData.colVertices.ToArray();
+            mesh.triangles = meshData.colTriangles.ToArray();
+            mesh.RecalculateNormals();
+
+            coll.sharedMesh = mesh;
+        }
     }
 }
