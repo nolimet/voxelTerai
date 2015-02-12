@@ -234,10 +234,6 @@ public class LoadChunks : MonoBehaviour
                 {
                     chunksToDelete.Add(chunk.Key);
                 }
-                if(distance == 0)
-                {
-                    print(chunk.Value.name);
-                }
             }
 
             print("Chunks tobe Destoryed" + chunksToDelete.Count);

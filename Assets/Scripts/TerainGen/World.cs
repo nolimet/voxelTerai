@@ -108,10 +108,26 @@ public class World : MonoBehaviour {
         Chunk chunk = null;
         if (chunks.TryGetValue(new WorldPos(x, y, x), out chunk))
         {
+            print("poof");
             Serialization.SaveChunk(chunk);
             chunks.Remove(new WorldPos(x, y, x));
             UnityEngine.Object.Destroy(chunk.gameObject);
             
+        }
+    }
+
+    public void PostProcessChunk(int x, int y, int z)
+    {
+        Chunk chunk = null;
+        if (chunks.TryGetValue(new WorldPos(x, y, z), out chunk))
+            chunk.update = true;
+        for (int xi = -1; x < 2; xi++)
+        {
+            for (int zi = -1; z < 2; zi++)
+            {
+                if (chunks.TryGetValue(new WorldPos(x + xi, y, z + zi), out chunk))
+                    chunk.update = true;
+            }
         }
     }
 
@@ -164,6 +180,7 @@ public class World : MonoBehaviour {
         newChunk.SetBlocksUnmodified();
 
         bool loaded = Serialization.Load(newChunk);
+        //PostProcessChunk(x,y,z);
     }
 
     void UpdateIfEqual(int value1, int value2, WorldPos pos)
