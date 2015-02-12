@@ -19,7 +19,7 @@ public class Chunk : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
-
+        
         filter = gameObject.GetComponent<MeshFilter>();
         coll = gameObject.GetComponent<MeshCollider>();
 
@@ -111,8 +111,12 @@ public class Chunk : MonoBehaviour {
     // to the mesh and collision components
     void RenderMesh(MeshData meshData)
     {
-        if (filter != null)
+        
+        if (filter == null)
         {
+            filter = gameObject.GetComponent<MeshFilter>();
+            coll = gameObject.GetComponent<MeshCollider>();
+        }
             filter.mesh.Clear();
             filter.mesh.vertices = meshData.vertices.ToArray();
             filter.mesh.triangles = meshData.triangles.ToArray();
@@ -127,6 +131,6 @@ public class Chunk : MonoBehaviour {
             mesh.RecalculateNormals();
 
             coll.sharedMesh = mesh;
-        }
+        
     }
 }

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-
+//using System.Threading;
 public class LoadChunks : MonoBehaviour
 {
     List<WorldPos> updateList = new List<WorldPos>();
@@ -58,6 +58,16 @@ public class LoadChunks : MonoBehaviour
     //Task ChunkFinder, LoadAndRender;
 
     // Update is called once per frame
+
+    /*Thread myThread;
+    void Start()
+    {
+       // StartCoroutine(ChunkUpdate());
+        ThreadStart myThreadDelegate = new ThreadStart(ChunkUpdate);
+        myThread = new Thread(myThreadDelegate);
+        myThread.Start();
+    }*/
+
     void Update()
     {
         /*if (ChunkFinder == null || !ChunkFinder.Running )
@@ -82,6 +92,7 @@ public class LoadChunks : MonoBehaviour
             {
                 world.DestroyChunk(chunk.Key.x, chunk.Key.y, chunk.Key.z);
             }
+        //myThread.Suspend();
     }
 
     void Control()
@@ -158,6 +169,23 @@ public class LoadChunks : MonoBehaviour
         }
     }
     */
+
+    /*void ChunkUpdate()
+    {
+        while (true)
+        {
+            if (dochunkstuff)
+            {
+                FindChunksToLoad();;
+                LoadAndRenderChunks();
+                Thread.Sleep(5);
+            }
+            else
+            {
+                Thread.Sleep(100);
+            }
+        }
+    }*/
 
     void BuildChunk(WorldPos pos)
     {
@@ -241,8 +269,8 @@ public class LoadChunks : MonoBehaviour
                 //chunk.update = true;
                 chunk.UpdateChunk();
             updateList.RemoveAt(0);
-           // if (i % 20 == 0 && i!=0)
-           //     return;
+            if (i % 20 == 0 && i!=0)
+                return;
         }
     }
 
