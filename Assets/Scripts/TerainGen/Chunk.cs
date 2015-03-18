@@ -4,11 +4,12 @@ using System.Collections;
 [RequireComponent(typeof(MeshFilter))]
 [RequireComponent(typeof(MeshRenderer))]
 [RequireComponent(typeof(MeshCollider))]
-public class Chunk : MonoBehaviour {
+public class Chunk : MonoBehaviour
+{
 
     public Block[, ,] blocks = new Block[chunkSize, chunkSize, chunkSize];
     public static int chunkSize = 16;
-   // public bool update = false;
+    // public bool update = false;
     public World world;
     public WorldPos pos;
     public bool rendered;
@@ -19,7 +20,7 @@ public class Chunk : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
-        
+
         filter = gameObject.GetComponent<MeshFilter>();
         coll = gameObject.GetComponent<MeshCollider>();
 
@@ -88,6 +89,7 @@ public class Chunk : MonoBehaviour {
     }
 
     //Updates the chunk based on its contents
+
     public void UpdateChunk()
     {
         rendered = true;
@@ -109,14 +111,17 @@ public class Chunk : MonoBehaviour {
 
     // Sends the calculated mesh information
     // to the mesh and collision components
+
     void RenderMesh(MeshData meshData)
     {
-        
+
         if (filter == null)
         {
             filter = gameObject.GetComponent<MeshFilter>();
             coll = gameObject.GetComponent<MeshCollider>();
         }
+        if (meshData.vertices.Count > 0)
+        {
             filter.mesh.Clear();
             filter.mesh.vertices = meshData.vertices.ToArray();
             filter.mesh.triangles = meshData.triangles.ToArray();
@@ -131,6 +136,6 @@ public class Chunk : MonoBehaviour {
             mesh.RecalculateNormals();
 
             coll.sharedMesh = mesh;
-        
+        }
     }
 }
