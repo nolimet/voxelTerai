@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public static class Terrain
+public static class TerrainEdit
 {
     public static WorldPos GetBlockPos(Vector3 pos)
     {
@@ -68,5 +68,18 @@ public static class Terrain
         chunk.world.SetBlock(pos.x, pos.y, pos.z, block);
 
         return true;
+    }
+
+    public static void SetBlock(int x, int y, int z, Block block, Chunk chunk, bool replaceBlocks = false)
+    {
+        x -= chunk.pos.x;
+        y -= chunk.pos.y;
+        z -= chunk.pos.z;
+
+        if (Chunk.InRange(x) && Chunk.InRange(y) && Chunk.InRange(z))
+        {
+            if (replaceBlocks || chunk.blocks[x, y, z] == null)
+                chunk.SetBlock(x, y, z, block);
+        }
     }
 }

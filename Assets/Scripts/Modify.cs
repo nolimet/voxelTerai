@@ -10,7 +10,8 @@ public class Modify : MonoBehaviour
 
     void Start()
     {
-        Screen.lockCursor = true;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     void Update()
@@ -20,7 +21,7 @@ public class Modify : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(transform.position, transform.forward, out hit, 100))
             {
-                Terrain.SetBlock(hit, new BlockAir());
+                TerrainEdit.SetBlock(hit, new BlockAir());
             }
         }
 
@@ -38,7 +39,7 @@ public class Modify : MonoBehaviour
         }
         if (!useFPS)
         {
-            if (Screen.lockCursor)
+            if (Cursor.lockState == CursorLockMode.Locked)
             {
                 rot = new Vector2(
                     rot.x + Input.GetAxis("Mouse X") * 3,
@@ -46,12 +47,19 @@ public class Modify : MonoBehaviour
 
                 transform.localRotation = Quaternion.AngleAxis(rot.x, Vector3.up);
                 transform.localRotation *= Quaternion.AngleAxis(rot.y, Vector3.left);
+
                 if (Input.GetKeyDown(KeyCode.Escape))
-                    Screen.lockCursor = false;
+                {
+                    Cursor.lockState = CursorLockMode.None;
+                    Cursor.visible = true;
+                }
             }
-            else
-                if (Input.GetMouseButton(1))
-                    Screen.lockCursor = true;
+            else if (Input.GetMouseButton(1))
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+            }
+
             float speed;
             if (Input.GetKey(KeyCode.LeftShift))
                 speed = 10f;
