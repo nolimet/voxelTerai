@@ -37,6 +37,22 @@ public class Modify : MonoBehaviour
                 transform.localRotation = Quaternion.identity;
             }
         }
+
+        if (Cursor.lockState == CursorLockMode.Locked)
+        {
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
+        }
+        else if (Input.GetMouseButton(1))
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+
+
         if (!useFPS)
         {
             if (Cursor.lockState == CursorLockMode.Locked)
@@ -47,18 +63,8 @@ public class Modify : MonoBehaviour
 
                 transform.localRotation = Quaternion.AngleAxis(rot.x, Vector3.up);
                 transform.localRotation *= Quaternion.AngleAxis(rot.y, Vector3.left);
+            }
 
-                if (Input.GetKeyDown(KeyCode.Escape))
-                {
-                    Cursor.lockState = CursorLockMode.None;
-                    Cursor.visible = true;
-                }
-            }
-            else if (Input.GetMouseButton(1))
-            {
-                Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
-            }
 
             float speed;
             if (Input.GetKey(KeyCode.LeftShift))
